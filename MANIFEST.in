@@ -1,0 +1,4 @@
+graft src/ansyswrapper/sphinx_build/html
+recursive-include src/ansyswrapper/test *.py
+include src/ansyswrapper *.py
+

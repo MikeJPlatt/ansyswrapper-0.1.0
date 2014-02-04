@@ -1,0 +1,747 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ansyswrapper.ansysWrapperGenerator &mdash; ansyswrapper 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ansyswrapper 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">ansyswrapper 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for ansyswrapper.ansysWrapperGenerator</h1><div class="highlight"><pre>
+<span class="c">#-------------------------------------------------------------------------------</span>
+<span class="c"># Name:        ANSYS Wrapper Generator GUI</span>
+<span class="c"># Owner:       Mechanical Solutions Inc.</span>
+<span class="c">#</span>
+<span class="c"># Author:      Kyle Lavoie, Mechanical Solutions Inc.</span>
+<span class="c">#</span>
+<span class="c"># Created:     5/14/2013</span>
+<span class="c"># Copyright:   (c) Mechanical Solutions Inc.</span>
+<span class="c">#-------------------------------------------------------------------------------</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">string</span>
+
+<span class="kn">import</span> <span class="nn">ansysinfo</span>
+
+<span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">PyQt4.QtGui</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">PyQt4</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">ui_ANSYS_Wrapper_Generator_3</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">openmdao.gui.filemanager</span>
+
+<span class="n">indent1</span> <span class="o">=</span> <span class="s">&#39;    &#39;</span>
+<span class="n">indent2</span> <span class="o">=</span> <span class="n">indent1</span> <span class="o">+</span> <span class="n">indent1</span>
+<span class="n">indent3</span> <span class="o">=</span> <span class="n">indent2</span> <span class="o">+</span> <span class="n">indent1</span>
+<span class="n">indent4</span> <span class="o">=</span> <span class="n">indent3</span> <span class="o">+</span> <span class="n">indent1</span>
+<span class="n">indent5</span> <span class="o">=</span> <span class="n">indent4</span> <span class="o">+</span> <span class="n">indent1</span>
+<span class="n">indent6</span> <span class="o">=</span> <span class="n">indent5</span> <span class="o">+</span> <span class="n">indent1</span>
+<span class="n">triplequote</span> <span class="o">=</span> <span class="s">&#39;&quot;&quot;&quot;&#39;</span>
+<span class="n">CR</span> <span class="o">=</span> <span class="s">&quot;&#39;</span><span class="se">\\</span><span class="s">n&#39;&quot;</span>
+
+
+
+
+<div class="viewcode-block" id="MainDlg"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysWrapperGenerator.MainDlg">[docs]</a><span class="k">class</span> <span class="nc">MainDlg</span><span class="p">(</span><span class="n">QDialog</span><span class="p">,</span> <span class="n">Ui_Dialog</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">logger_name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MainDlg</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setupUi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c"># set initial values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ansysFileDir</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s">&#39;C:/&#39;</span><span class="p">)</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">ansysFileName</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s">&#39;file.db&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genWrapName</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s">&#39;file&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ansysVer</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="s">&#39;v14.5&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger_name</span> <span class="o">=</span> <span class="n">logger_name</span>
+
+    <span class="nd">@pyqtSignature</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="MainDlg.on_generateWrap_clicked"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysWrapperGenerator.MainDlg.on_generateWrap_clicked">[docs]</a>    <span class="k">def</span> <span class="nf">on_generateWrap_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span> 
+
+        <span class="c">#Get Input Values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ansysDir</span><span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ansysFileDir</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ansysName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ansysFileName</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wrapName</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genWrapName</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ansysVer</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+
+        <span class="n">testdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansysDir</span> <span class="o">+</span> <span class="s">&#39;/&#39;</span>
+
+        <span class="c">#Build TestGen\TestOut directory if it dosent already exist</span>
+        <span class="n">genfolder</span> <span class="o">=</span> <span class="s">&quot;TestGen&quot;</span>
+        <span class="n">outfolder</span> <span class="o">=</span> <span class="s">&quot;TestOut&quot;</span>
+        <span class="n">beginpath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansysDir</span>
+        <span class="n">firstpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">beginpath</span><span class="p">,</span> <span class="n">genfolder</span><span class="p">)</span>
+        <span class="n">fullpath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">firstpath</span><span class="p">,</span> <span class="n">outfolder</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">fullpath</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">fullpath</span><span class="p">)</span>
+
+        <span class="c">#update ANSYS Version</span>
+        <span class="n">versionNum</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">isdigit</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">))</span>
+        <span class="n">version</span> <span class="o">=</span> <span class="s">&quot;ANSYS&quot;</span> <span class="o">+</span> <span class="n">versionNum</span>
+
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapName</span>
+        <span class="n">genfilename</span> <span class="o">=</span> <span class="n">testdir</span> <span class="o">+</span> <span class="s">&#39;TestGen/&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">wrapName</span><span class="o">+</span> <span class="s">&#39;.py&#39;</span>
+        <span class="n">dbfile</span> <span class="o">=</span> <span class="n">testdir</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansysName</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">wg</span> <span class="o">=</span> <span class="n">WrapperGenerator</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">genfilename</span><span class="p">,</span> <span class="n">dbfile</span><span class="p">,</span> <span class="n">ANSYS_VER</span> <span class="o">=</span> <span class="n">version</span><span class="p">,</span> <span class="n">logger_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wg</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>         
+
+</div>
+    <span class="nd">@pyqtSignature</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="MainDlg.on_dirBrowse_clicked"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysWrapperGenerator.MainDlg.on_dirBrowse_clicked">[docs]</a>    <span class="k">def</span> <span class="nf">on_dirBrowse_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getExistingDirectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                                                <span class="s">&quot;Make PyQt - Set Path&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansysFileDir</span><span class="o">.</span><span class="n">text</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">path</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ansysFileDir</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">QDir</span><span class="o">.</span><span class="n">toNativeSeparators</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+</div>
+    <span class="nd">@pyqtSignature</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="MainDlg.on_nameBrowse_clicked"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysWrapperGenerator.MainDlg.on_nameBrowse_clicked">[docs]</a>    <span class="k">def</span> <span class="nf">on_nameBrowse_clicked</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>    
+
+        <span class="n">string</span> <span class="o">=</span> <span class="n">QString</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+        <span class="nb">filter</span> <span class="o">=</span> <span class="s">&quot;All (*)&quot;</span>
+
+        <span class="n">qstr</span> <span class="o">=</span> <span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">QString</span><span class="p">(</span><span class="s">&quot;Open File&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ansysFileDir</span><span class="o">.</span><span class="n">text</span><span class="p">(),</span> <span class="n">QString</span><span class="p">(</span><span class="s">&quot;ANSYS (*.db)&quot;</span><span class="p">));</span>
+        <span class="n">fileName</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">qstr</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ansysFileName</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">fileName</span><span class="p">)</span>
+</div></div>
+<div class="viewcode-block" id="WrapperGenerator"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysWrapperGenerator.WrapperGenerator">[docs]</a><span class="k">class</span> <span class="nc">WrapperGenerator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Generates an OpenMDAO Wrapper for ANSYS Structural, based on info either</span>
+<span class="sd">       in a generated component information file, or in the ANSYS db.  </span>
+<span class="sd">       </span>
+<span class="sd">       To use: initialize, then call generate().</span>
+
+<span class="sd">       *Parameters*</span>
+<span class="sd">       </span>
+<span class="sd">           name: string</span>
+<span class="sd">               Name used to identify the Wrapped Component.</span>
+<span class="sd">               </span>
+<span class="sd">            genfilename: string</span>
+<span class="sd">                Full path to filename of the generate Wrapped Component.</span>
+<span class="sd">                </span>
+<span class="sd">            dbfile: string (optional)</span>
+<span class="sd">                Full path to name of ANSYS Structural .db file.  Default &#39;&#39;.  One of dbfile and componentsfile MUST be set.</span>
+<span class="sd">                </span>
+<span class="sd">            componentsfile: string (optional)</span>
+<span class="sd">                Full path to name of previously created components file for the ANSYS Structural Model.  Default &#39;&#39;.  </span>
+<span class="sd">                One of dbfile and componentsfile MUST be set.</span>
+<span class="sd">                </span>
+<span class="sd">            ANSYS_VER: string (optional)</span>
+<span class="sd">                ANSYS Version String. Default ANSYS145.</span>
+<span class="sd">                </span>
+<span class="sd">            model_file_ext: string (optional)</span>
+<span class="sd">                File extension for the model file.  Default py.</span>
+<span class="sd">                </span>
+<span class="sd">            logger_name: string(optional)</span>
+<span class="sd">                Name of an existing logging::logger to use, if any.  Default None.  If None, a logger will be created with an internal name.</span>
+<span class="sd">                </span>
+<span class="sd">            initial_values_dictionary: dictionary of string to float (optional)</span>
+<span class="sd">                Values in the original Structural model of the items in ansysinfo globalinputtypes</span>
+<span class="sd">       &quot;&quot;&quot;</span>
+    <span class="n">ok</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">components</span> <span class="o">=</span> <span class="p">{}</span> <span class="c">#empty dictionary of dictionaries of node numbers</span>
+    <span class="n">prep7</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">solution</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">genfilename</span><span class="p">,</span> <span class="n">dbfile</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">componentsfile</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">ANSYS_VER</span> <span class="o">=</span> <span class="s">&#39;ANSYS145&#39;</span><span class="p">,</span> <span class="n">model_file_ext</span> <span class="o">=</span> <span class="s">&#39;py&#39;</span><span class="p">,</span> 
+                 <span class="n">logger_name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">initial_values_dictionary</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;omega_Z&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span> <span class="s">&#39;temp_ref&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">,</span> <span class="s">&#39;temp_unif&#39;</span><span class="p">:</span><span class="mf">0.0</span><span class="p">}):</span>
+        <span class="k">if</span> <span class="n">logger_name</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&quot;MSI&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dbfile</span> <span class="o">==</span> <span class="s">&#39;&#39;</span> <span class="ow">and</span> <span class="n">componentsfile</span> <span class="o">==</span> <span class="s">&#39;&#39;</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: at least one of dbfile or componentsfile is required&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genfilename</span> <span class="o">=</span> <span class="n">genfilename</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">dbfile</span> <span class="o">=</span> <span class="n">dbfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span> <span class="o">=</span> <span class="n">componentsfile</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">classname</span> <span class="o">=</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;Wrapper&#39;</span>    
+        <span class="bp">self</span><span class="o">.</span><span class="n">ANSYS_VER</span> <span class="o">=</span> <span class="n">ANSYS_VER</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model_file_ext</span> <span class="o">=</span> <span class="n">model_file_ext</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_values_dictionary</span> <span class="o">=</span> <span class="n">initial_values_dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        
+<div class="viewcode-block" id="WrapperGenerator.get_model_file_name"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.get_model_file_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_model_file_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">componentsfilebase</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_file_ext</span>
+</div>
+    <span class="k">def</span> <span class="nf">_gen_componentsfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">cfile</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ansysdir</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ANSYS_VER</span> <span class="o">+</span> <span class="s">&#39;_DIR&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span>  <span class="s">&#39;Cannot find &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANSYS_VER</span> <span class="o">+</span> <span class="s">&#39;_DIR in environment</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ke</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>            
+            <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span> <span class="n">cfile</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">ansysdir2</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s">&#39;ANSYS_SYSDIR&#39;</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">ke</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span>  <span class="s">&#39;Cannot find ANSYS_SYSDIR in environment</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ke</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>           
+            <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span> <span class="n">cfile</span>
+
+        <span class="n">ansys_exe</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ansysdir</span><span class="p">,</span> <span class="s">&#39;bin&#39;</span><span class="p">,</span> <span class="n">ansysdir2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ANSYS_VER</span><span class="p">)</span>
+        <span class="n">dbname</span><span class="p">,</span> <span class="n">dbext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbfile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dbext</span><span class="p">):</span> <span class="n">dbext</span> <span class="o">=</span> <span class="n">dbext</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">tempstr</span> <span class="o">=</span> <span class="s">&#39;tmp_&#39;</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y_%m_</span><span class="si">%d</span><span class="s">__%H_%M_%S&#39;</span><span class="p">)</span>
+        <span class="n">inputfile</span> <span class="o">=</span> <span class="n">tempstr</span> <span class="o">+</span> <span class="s">&#39;_gen_comps.dat&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">componentsfilebase</span> <span class="o">=</span> <span class="s">&#39;c_&#39;</span> <span class="o">+</span> <span class="n">tempstr</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">inputfile</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+            <span class="n">outfile</span> <span class="o">=</span> <span class="n">tempstr</span> <span class="o">+</span> <span class="s">&#39;_ListComps.out&#39;</span>
+            <span class="c">#import pdb; pdb.set_trace()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;/batch</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;/TITLE, List Components of &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;/prep7</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;NNAME = </span><span class="se">\&#39;</span><span class="s">NODE</span><span class="se">\&#39;\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;resume,&#39;</span> <span class="o">+</span> <span class="n">dbname</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span> <span class="o">+</span> <span class="n">dbext</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;CSYS, 1</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;/STATUS,UNITS</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*get,units,ACTIVE,0,UNITS</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*get,nComps,COMP,,ncomp</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;/STATUS,GLOBAL</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*cfopen,&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">componentsfilebase</span> <span class="o">+</span> <span class="s">&#39;,&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_file_ext</span> <span class="o">+</span> <span class="s">&#39;,, </span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;class FeaModelInPythonFormat:</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;	def __init__(self):</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;		self.nodeLabels = [&quot;number&quot;, &quot;x&quot;, &quot;y&quot;, &quot;z&quot;,]</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite, units</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;		self.units = %I</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;		self.coordinateSystem = &quot;Cartesian&quot;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;		self.smoothingCoordinates = &quot;XYZ&quot;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;		self.nodeMap = {</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;i = 1</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;! one DO loop to fill up the node map</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*do,i,1,nComps,1</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;	*get,compName,comp,i,name		! get the name of the nth component</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;	*get,nType,comp,compName,type	! get the type #</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;					! 1=Nodes, 2=Elements, 6=Keypoints, 7=Lines, 8=Areas, 9=Volumes</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;	 ! first, print out all of the nodes</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39; ! node components</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *if,nType,eq,1,then</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;         allsel</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        cmsel,,compName</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        ! keypoint components</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *elseif,nType,eq,6,then</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        allsel</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        cmsel,,compName</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        nslk,S</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *elseif,nType,eq,8,then</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        allsel</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        cmsel,,compName</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        nsla,s,1</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *endif</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    ! start writing the nodes</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *get,nCount,node,,count ! Get total number of selected nodes</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vwrite, compName</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			&quot;</span><span class="si">%s</span><span class="s">&quot; :</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			[</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *dim, nArray, array, nCount,4 ! Create NCOUNT  array</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vget, nArray(1,1), node, 1, nlist ! Fill NARRAY with node numbers</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vget, nArray(1,2), node, 2, loc, X</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vget, nArray(1,3), node, 3, loc, Y</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vget, nArray(1,4), node, 4, loc, Z</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vwrite, nArray(1,1), nArray(1,2), nArray(1,3), nArray(1,4)  ! Write NARRAY to file</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			[%6D, </span><span class="si">%10.4F</span><span class="s">, </span><span class="si">%10.4F</span><span class="s">, </span><span class="si">%10.4F</span><span class="s">,],</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			],</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *del,nArray,,nopr</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*enddo 		! finished with the node map</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			}</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;! another DO loop for the facets</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;		self.facetMap = {</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*do,i,1,nComps,1</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *get,compName,comp,i,name		! get the name of the nth component</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *get,nType,comp,compName,type	! get the type #</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;					! 1=Nodes, 2=Elements, 6=Keypoints, 7=Lines, 8=Areas, 9=Volumes</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;    *if,nType,eq,8,then</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     allsel</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     cmsel,,compName</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     nsla,s,1</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     nsla,S,0   ! select all nodes internal to the area(s)</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     esln,S,0   ! select all elements connected to the nodes</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     nsla,S,1   ! select all nodes internal to the area and</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     *get,eCount,ELEM,,count    ! number of selected elements</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     current_element_number=0</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite, compName</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			&quot;</span><span class="si">%s</span><span class="s">&quot; :</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			[</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     *do,AR13,1,eCount          ! loop on all selected nodes</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;         current_element_number=ELNEXT(current_element_number)       ! element number in the list</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;         face_number=NMFACE(current_element_number)       ! face number</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;         *if, face_number, gt, 0, then</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;             *dim,fn,array,8</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;             *do,j,1,8</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;                 fn(j) = ndface(current_element_number, face_number, j) !node numbers for this face</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;             *enddo</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;             *vwrite, current_element_number, face_number, fn(1), fn(2), fn(3), fn(4), fn(5), fn(6), fn(7), fn(8)</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			[</span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">, </span><span class="si">%6d</span><span class="s">,],</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;                *del,fn,,NOPR</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;            *endif</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        *enddo</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;        *vwrite</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			],</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;     *endif</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*enddo</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*vwrite		!finished with the element faces</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;			}</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&#39;*CFCLOSE</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="n">cmd</span> <span class="o">=</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">ansys_exe</span> <span class="o">+</span> <span class="s">&#39;&quot; -b -i &#39;</span> <span class="o">+</span> <span class="n">inputfile</span> <span class="o">+</span> \
+                <span class="s">&#39; -o &#39;</span> <span class="o">+</span> <span class="n">outfile</span> <span class="o">+</span> <span class="s">&#39; -j &#39;</span> <span class="o">+</span> <span class="s">&#39;Job_&#39;</span> <span class="o">+</span> <span class="n">tempstr</span> 
+
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">subprocess</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">ret</span> <span class="o">==</span> <span class="mi">8</span><span class="p">:</span> <span class="c"># success return</span>
+                <span class="n">cfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_model_file_name</span><span class="p">()</span>
+                <span class="c">#check for errors in ansys error file</span>
+                <span class="n">errfile</span> <span class="o">=</span> <span class="s">&#39;Job_&#39;</span> <span class="o">+</span> <span class="n">tempstr</span> <span class="o">+</span> <span class="s">&#39;.err&#39;</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">errfile</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ioe</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span>  <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: opening error file &#39;</span> <span class="o">+</span> <span class="n">errfile</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">PLEASE CHECK GENERATED WRAPPER &#39;</span> <span class="o">+</span> <span class="n">cfile</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ioe</span><span class="p">)</span>
+                    <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>          
+                    <span class="k">return</span> <span class="n">cfile</span>
+                <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">l</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">&#39;ERROR&#39;</span><span class="p">):</span>
+                        <span class="n">s</span> <span class="o">=</span>  <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: found &quot;ERROR&quot; in &#39;</span> <span class="o">+</span> <span class="n">errfile</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">PLEASE CHECK GENERATED WRAPPER &#39;</span> <span class="o">+</span> <span class="n">cfile</span>
+                        <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>          
+                        <span class="k">break</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span>  <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: ANSYS returned &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; for command &#39;</span> <span class="o">+</span> <span class="n">cmd</span>
+                <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>          
+            <span class="k">return</span> <span class="n">cfile</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ioe</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span>  <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: trying to create file &#39;</span> <span class="o">+</span> <span class="n">inputfile</span> <span class="o">+</span> <span class="s">&#39; in directory &#39;</span> <span class="o">+</span> <span class="n">path</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ioe</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>          
+            <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">False</span>
+            <span class="k">return</span> <span class="n">cfile</span>
+
+    <span class="k">def</span> <span class="nf">_parse_componentsfile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">componentsfile</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">componentsfile</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ioe</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span>  <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: opening componentsfile file &#39;</span> <span class="o">+</span> <span class="n">componentsfile</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ioe</span><span class="p">)</span>
+            <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>        
+            <span class="k">return</span> <span class="bp">False</span>
+        <span class="k">exec</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="n">feaModel</span> <span class="o">=</span> <span class="n">FeaModelInPythonFormat</span><span class="p">()</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># empty dictionary</span>
+        <span class="k">for</span> <span class="n">nodeName</span> <span class="ow">in</span> <span class="n">feaModel</span><span class="o">.</span><span class="n">nodeMap</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">][</span><span class="n">nodeName</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># empty list</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">feaModel</span><span class="o">.</span><span class="n">nodeMap</span><span class="p">[</span><span class="n">nodeName</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s">&#39;nodes&#39;</span><span class="p">][</span><span class="n">nodeName</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s">&#39;surfaces&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># empty dictionary</span>
+        <span class="k">for</span> <span class="n">surfaceName</span> <span class="ow">in</span> <span class="n">feaModel</span><span class="o">.</span><span class="n">facetMap</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s">&#39;surfaces&#39;</span><span class="p">][</span><span class="n">surfaceName</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span> <span class="c"># empty list</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">feaModel</span><span class="o">.</span><span class="n">facetMap</span><span class="p">[</span><span class="n">surfaceName</span><span class="p">]:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s">&#39;surfaces&#39;</span><span class="p">][</span><span class="n">surfaceName</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">[</span><span class="n">n</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="p">)</span> 
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span> <span class="o">=</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">unitsinfodict</span><span class="p">[</span><span class="s">&#39;0&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">feaModel</span><span class="o">.</span><span class="n">units</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">unitsinfodict</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span> <span class="o">=</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">unitsinfodict</span><span class="p">[</span> <span class="nb">str</span><span class="p">(</span><span class="n">feaModel</span><span class="o">.</span><span class="n">units</span><span class="p">)</span> <span class="p">]</span>                   
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: unknown units value &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">feaModel</span><span class="o">.</span><span class="n">units</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; in components file &#39;</span> <span class="o">+</span> <span class="n">componentsfile</span>
+            <span class="k">print</span> <span class="s">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>        
+        <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;Units info: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">dump</span><span class="p">()</span>
+        <span class="k">print</span> <span class="n">s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">True</span>
+
+    <span class="k">def</span> <span class="nf">_parse_prep7File</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read the extra /PREP7 command file, if it exists. This will have extra </span>
+<span class="sd">        commands that wind up in the PREP7 portion of the wrapped ANSYS input file.</span>
+<span class="sd">        The commands come from model_db_name.prep7.txt from the same directory as the db file.&quot;&quot;&quot;</span>
+
+        <span class="n">dbname</span><span class="p">,</span> <span class="n">dbext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbfile</span><span class="p">)</span>
+        <span class="n">apdlFile</span> <span class="o">=</span> <span class="n">dbname</span> <span class="o">+</span> <span class="s">&#39;.prep7.txt&#39;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span> <span class="n">apdlFile</span> <span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">apdlFile</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prep7</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_parse_solutionFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read the extra /SOL command file, if it exists. This will have extra </span>
+<span class="sd">        commands that wind up in the SOL portion of the wrapped ANSYS input file.</span>
+<span class="sd">        The commands come from model_db_name.solution.txt from the same directory as the db file&quot;&quot;&quot;</span>
+
+        <span class="n">dbname</span><span class="p">,</span> <span class="n">dbext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbfile</span><span class="p">)</span>
+        <span class="n">apdlFile</span> <span class="o">=</span> <span class="n">dbname</span> <span class="o">+</span> <span class="s">&#39;.solution.txt&#39;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span> <span class="n">apdlFile</span> <span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">apdlFile</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">solution</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_parse_postFile</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Read the extra /POST command file, if it exists. This will have extra </span>
+<span class="sd">        commands that wind up in the POST portion of the wrapped ANSYS input file.</span>
+<span class="sd">        The commands come from model_db_name.post.txt from the same directory as the db file&quot;&quot;&quot;</span>
+
+        <span class="n">dbname</span><span class="p">,</span> <span class="n">dbext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dbfile</span><span class="p">)</span>
+        <span class="n">apdlFile</span> <span class="o">=</span> <span class="n">dbname</span> <span class="o">+</span> <span class="s">&#39;.post.txt&#39;</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span> <span class="n">apdlFile</span> <span class="p">):</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">apdlFile</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">post</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_writeline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genfile</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">line</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_genheader</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">codepath</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;import logging&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;import operator&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;import math&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from openmdao.main.api import Component&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from openmdao.lib.datatypes.api import Array, Float, List, Str&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from openmdao.lib.components.api import ExternalCode&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from openmdao.util.filewrap import FileParser&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from openmdao.util.filewrap import InputFileGenerator&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from openmdao.main.exceptions import RunInterrupted&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from pyparsing import ParseBaseException&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;import os.path&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from os import chdir, getcwd&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;import sys&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;sys.path.insert(0, </span><span class="se">\&#39;</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">codepath</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">&#39;</span><span class="p">,</span> <span class="s">&#39;/&#39;</span><span class="p">)</span> <span class="o">+</span>
+                        <span class="s">&#39;</span><span class="se">\&#39;</span><span class="s">)</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;from ansyswrapper.ansyswrapper import ANSYSWrapperBase&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;class &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">classname</span> <span class="o">+</span> <span class="s">&#39;(ANSYSWrapperBase):&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="n">triplequote</span> <span class="o">+</span>
+                        <span class="s">&#39;A Wrapper for ANSYS Classic Structural &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;.&#39;</span> <span class="o">+</span>
+                        <span class="n">triplequote</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span>
+                        <span class="s">&#39;#Creates parameters and initializes components.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span>
+                        <span class="s">&#39;#Base class handles input, execution, and output.&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gendecl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">units</span><span class="p">):</span>
+        <span class="n">nm</span> <span class="o">=</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">_make_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">nm</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">indent1</span> <span class="o">+</span> <span class="n">nm</span> <span class="o">+</span> <span class="s">&#39; = Float(0.0,&#39;</span> <span class="s">&#39;iotype = &quot;in&quot;,</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;desc = &quot; &#39;</span> <span class="o">+</span> \
+            <span class="n">i</span> <span class="o">+</span> <span class="s">&#39; on &#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39; component &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">ok</span> <span class="ow">and</span> <span class="n">units</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">info</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&#39;,</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;units = &quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">units</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_gendecls</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s">&#39;#Assumes 0.0 initial value for inputs&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="c">#TO_CHECK  - is there any way to get units?</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">==</span> <span class="s">&#39;surfaces&#39;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">surfaceinputtypes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_gendecl</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s">&#39;keypoints&#39;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">keypointinputtypes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_gendecl</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">k</span> <span class="o">==</span> <span class="s">&#39;nodes&#39;</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">nodeinputtypes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_gendecl</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: unknown component type &#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39; - IGNORED&#39;</span>
+                    <span class="k">print</span> <span class="s">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>        
+                <span class="k">for</span> <span class="n">otype</span><span class="p">,</span> <span class="n">ounits</span> <span class="ow">in</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">outputtypes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                    <span class="n">n</span> <span class="o">=</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">_make_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">otype</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">ok</span> <span class="ow">and</span> <span class="n">ounits</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">info</span><span class="p">:</span>
+                        <span class="n">units_str</span> <span class="o">=</span> <span class="s">&#39;,</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;units = &quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">ounits</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">units_str</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="n">n</span> <span class="o">+</span>
+                                    <span class="s">&#39; = Array(iotype = &quot;out&quot;, dtype = &quot;float&quot;,</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;desc = &quot;&#39;</span> <span class="o">+</span> <span class="n">otype</span> <span class="o">+</span>
+                                    <span class="s">&#39; on nodes of &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">units_str</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">ctype</span> <span class="ow">in</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">calctypes</span><span class="p">:</span>
+                        <span class="n">cname</span> <span class="o">=</span> <span class="n">n</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">ctype</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">output_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cname</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="n">cname</span> <span class="o">+</span> <span class="s">&#39; = Float(0.0, iotype = &quot;out&quot;,</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span>
+                                        <span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;desc = &quot;&#39;</span> <span class="o">+</span> <span class="n">ctype</span> <span class="o">+</span> <span class="s">&#39; of &#39;</span> <span class="o">+</span> <span class="n">otype</span> <span class="o">+</span> <span class="s">&#39; on nodes of &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">units_str</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">ansysinfo</span><span class="o">.</span><span class="n">globalinputtypes</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">iunits</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">ok</span> <span class="ow">and</span> <span class="n">iunits</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">info</span><span class="p">:</span>
+                <span class="n">units_str</span> <span class="o">=</span> <span class="s">&#39;units = &quot;&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">unitsinfo</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="n">iunits</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">units_str</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+            <span class="n">global_name</span> <span class="o">=</span> <span class="s">&#39;FEA_&#39;</span> <span class="o">+</span> <span class="n">i</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">global_name</span><span class="p">)</span>
+            <span class="n">initial_name</span> <span class="o">=</span> <span class="s">&#39;initial_&#39;</span> <span class="o">+</span> <span class="n">global_name</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values_dictionary</span><span class="p">:</span>
+                <span class="n">initial_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_values_dictionary</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">initial_value</span> <span class="o">=</span> <span class="mf">0.0</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: &#39;</span> <span class="o">+</span> <span class="n">i</span> <span class="o">+</span> <span class="s">&#39; not in initial_values_dictionary; using 0.0 as initial value&#39;</span>
+                <span class="k">print</span> <span class="s">&#39;WARNING: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="n">global_name</span> <span class="o">+</span> <span class="s">&#39; = Float(&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">initial_value</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;, iotype = &quot;in&quot;, &#39;</span> <span class="o">+</span> <span class="n">units_str</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span><span class="p">)</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="n">initial_name</span>  <span class="o">+</span> <span class="s">&#39; = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">initial_value</span><span class="p">))</span>
+        <span class="c">#an output for the full name of the python results file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s">&#39;Results_File = Str(iotype = &quot;out&quot;, desc = &quot;Results file in Python Format&quot;)&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_geninit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span>
+            <span class="s">&#39;def __init__(self, name, runner, dbfile, elasticity = [100, 100, 100], poisson = [0.33, 0.33, 0.33], logger_name = None):&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="n">triplequote</span> <span class="o">+</span> <span class="s">&#39;Constructor for the &#39;</span> <span class="o">+</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">classname</span> <span class="o">+</span> <span class="s">&#39; ANSYS OpenMDAO component.&#39;</span> <span class="o">+</span> <span class="n">triplequote</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;super(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">classname</span> <span class="o">+</span>
+            <span class="s">&#39;, self).__init__(name = name, runner = runner, dbfile = dbfile, elasticity = elasticity, poisson = poisson, logger_name = logger_name)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;self.Results_File = os.path.join(runner.workingdir, self.my_name + &quot;.py&quot;)&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;self.components[&quot;global&quot;] = {}&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;self.components[&quot;global&quot;][&quot;FEA&quot;] = []&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span>
+                            <span class="s">&#39;self.components[&quot;&#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39;&quot;] = {} #empty dictionary&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">nodes</span> <span class="ow">in</span> <span class="n">v</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span>
+                                <span class="s">&#39;self.components[&quot;&#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39;&quot;][&quot;&#39;</span> <span class="o">+</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;&quot;] = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">nodes</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;self.logger.debug(&quot;Init: &quot; + self.dump())&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s">&#39;def execute(self):&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;super(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">classname</span> <span class="o">+</span> <span class="s">&#39;, self).execute()&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_genexecute</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+
+    <span class="k">def</span> <span class="nf">_genoptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">prep7</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s">&#39;def prep7(self):&#39;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="n">triplequote</span> <span class="o">+</span> <span class="s">&#39;Entry point for derived wrappers to add customization to the /PREP7 section&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;Derived from the file:  model_db_name.prep7.txt from same directory as the db file&#39;</span> <span class="o">+</span> <span class="n">triplequote</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;options = []&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prep7</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;options.append( &#39;</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="s">&#39; )&#39;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;return options&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s">&#39;def solution(self):&#39;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="n">triplequote</span> <span class="o">+</span> <span class="s">&#39;entry point for derived wrappers to add customization to the /SOL section&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;Derived from the file:  model_db_name.solution.txt  from same directory as the db file&#39;</span> <span class="o">+</span> <span class="n">triplequote</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;options = []&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">solution</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;options.append( &#39;</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="s">&#39; )&#39;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;return options&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">post</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="s">&#39;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent1</span> <span class="o">+</span> <span class="s">&#39;def post(self):&#39;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="n">triplequote</span> <span class="o">+</span> <span class="s">&#39;entry point for derived wrappers to add customization to the /POST section&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;Derived from the file:  model_db_name.post.txt from same directory as the db file&#39;</span> <span class="o">+</span> <span class="n">triplequote</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;options = []&#39;</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">post</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;options.append( &#39;</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">+</span> <span class="s">&#39;&quot;&#39;</span> <span class="o">+</span> <span class="s">&#39; )&#39;</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_writeline</span><span class="p">(</span><span class="n">indent2</span> <span class="o">+</span> <span class="s">&#39;return options&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="WrapperGenerator.generate"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.generate">[docs]</a>    <span class="k">def</span> <span class="nf">generate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Generate the wrapper.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: see previous errors&#39;</span>
+            <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>        
+            <span class="k">return</span>
+        <span class="n">currdir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">path</span><span class="p">,</span><span class="n">gen</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genfilename</span><span class="p">)</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span><span class="p">):</span> <span class="c">#need to generate the components file</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_gen_componentsfile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span><span class="p">):</span> <span class="c">#problem generating it</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">False</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: trying to create componentsfile &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span>
+                    <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>        
+                    <span class="k">return</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: components file: &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span> 
+            <span class="k">print</span> <span class="n">s</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">genfile</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">genfilename</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+                <span class="c">#import pdb; pdb.set_trace()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_componentsfile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: no components found in &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">componentsfile</span>
+                    <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>        
+                    <span class="k">return</span>
+
+                <span class="c">#parse the prep7, sol, and post files</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parse_prep7File</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parse_solutionFile</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_parse_postFile</span><span class="p">()</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_genheader</span><span class="p">(</span><span class="n">currdir</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_gendecls</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_geninit</span><span class="p">()</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">_genexecute</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_genoptions</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">genfile</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ioe</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;AnsysWrapperGenerator for &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s">&#39;: cannot open &#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">genfilename</span> 
+                <span class="n">s</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">exc_info</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n\t</span><span class="s">&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ioe</span><span class="p">)</span>
+                <span class="k">print</span> <span class="s">&#39;ERROR: &#39;</span> <span class="o">+</span> <span class="n">s</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>        
+                <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">return</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">currdir</span><span class="p">)</span>
+            </div></div>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span> <span class="c"># pragma: no cover         </span>
+
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c"># Use this code block to run directly</span>
+<span class="c">#    name = &#39;BeamWUnitsTest&#39;</span>
+<span class="c">#    dir = &#39;C:\\Projects_KRL\\OPenMDAO\\Cases\\MSI_Pump_Case\\Case_4\ANSYS&#39;</span>
+<span class="c">#    genfilename = os.path.join(dir, name + &#39;.py&#39;)</span>
+<span class="c">#    dbfile = os.path.join(dir, &#39;impeller_coarse.db&#39;)</span>
+<span class="c">#    wg = WrapperGenerator(name, genfilename, dbfile, ANSYS_VER = &#39;ANSYS145&#39;)   </span>
+<span class="c">#    wg.generate()</span>
+
+
+<span class="c"># Use this code block to run through the GUI</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">QApplication</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span>
+    <span class="n">form</span> <span class="o">=</span> <span class="n">MainDlg</span><span class="p">(</span><span class="n">logger_name</span> <span class="o">=</span> <span class="s">&#39;MSI&#39;</span><span class="p">)</span>
+    <span class="n">form</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">ansyswrapper 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013 Mechanical Solutions Inc..
+      Last updated on Oct 30, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

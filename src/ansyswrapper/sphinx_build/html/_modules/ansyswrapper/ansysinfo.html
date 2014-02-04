@@ -1,0 +1,213 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ansyswrapper.ansysinfo &mdash; ansyswrapper 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="ansyswrapper 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">ansyswrapper 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for ansyswrapper.ansysinfo</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;Holds info about how to use ANSYS Classic Structural.&quot;&quot;&quot;</span>
+
+<span class="c">#Information about input variables of an OpenMDAO ANSYS Component</span>
+<span class="c"># %N% is name of component, %V% is value</span>
+<span class="c"># keys much match those in AnsysUnitsInfo</span>
+<span class="n">surfaceinputtypes</span> <span class="o">=</span> <span class="p">{</span> 
+    <span class="s">&#39;PRESS_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;sfa,%N%,1,pres,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;pressure&#39;</span><span class="p">],</span>
+<span class="c">#    &#39;TEMP_i&#39;  : [&#39;da,%N%,temp,%V%&#39;, &#39;temperature&#39;]</span>
+    <span class="p">}</span>
+<span class="n">keypointinputtypes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;FX_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;fk,%N%,fx,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;force&#39;</span><span class="p">],</span>
+    <span class="s">&#39;FY_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;fk,%N%,fy,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;force&#39;</span><span class="p">],</span>
+    <span class="s">&#39;FZ_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;fk,%N%,fz,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;force&#39;</span><span class="p">],</span>
+    <span class="s">&#39;TEMP_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;dk,%N%,all,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;temperature&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UX_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;dk,%N%,ux,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UY_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;dk,%N%,uy,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UZ_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;dk,%N%,uz,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="n">nodeinputtypes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;FX_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;f,%N%,fx,%V%&#39;</span><span class="p">,</span><span class="s">&#39;force&#39;</span><span class="p">],</span>
+    <span class="s">&#39;FY_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;f,%N%,fy,%V%&#39;</span><span class="p">,</span><span class="s">&#39;force&#39;</span><span class="p">],</span>
+    <span class="s">&#39;FZ_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;f,%N%,fz,%V%&#39;</span><span class="p">,</span><span class="s">&#39;force&#39;</span><span class="p">],</span>
+    <span class="s">&#39;TEMP_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;d,%N%,all,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;temperature&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UX_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;d,%N%,ux,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UY_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;d,%N%,uy,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UZ_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;d,%N%,uz,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="n">coordinputtypes</span>  <span class="o">=</span> <span class="p">{</span> <span class="c"># for applying deflection at individual nodes</span>
+    <span class="s">&#39;UX_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;d,%N%,ux,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UY_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;d,%N%,uy,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">],</span>
+    <span class="s">&#39;UZ_i&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;d,%N%,uz,%V%&#39;</span><span class="p">,</span> <span class="s">&#39;length&#39;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="n">globalinputtypes</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;omega_Z&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;OMEGA,,,%V%&#39;</span><span class="p">,</span><span class="s">&#39;speed&#39;</span><span class="p">],</span>
+    <span class="s">&#39;temp_ref&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;TREF,%V%&#39;</span><span class="p">,</span><span class="s">&#39;temperature&#39;</span><span class="p">],</span>
+    <span class="s">&#39;temp_unif&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="s">&#39;TUNIF,%V%&#39;</span><span class="p">,</span><span class="s">&#39;temperature&#39;</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="c"># if any items are added to globalinputtypes, their initial_ parameters should be added to ansysWrapperGenerator __init__</span>
+
+<span class="c">#TO_CHECK: complete above, and add nodeinputtypes</span>
+
+<span class="c">#Information about output variables of an OpenMDAO ANSYS Component</span>
+<span class="c"># values must  match those in AnsysUnitsInfo</span>
+<span class="n">outputtypes</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;number&#39;</span><span class="p">:</span> <span class="s">&#39;&#39;</span><span class="p">,</span>
+               <span class="s">&#39;UX_o&#39;</span><span class="p">:</span> <span class="s">&#39;length&#39;</span><span class="p">,</span> <span class="s">&#39;UY_o&#39;</span><span class="p">:</span> <span class="s">&#39;length&#39;</span><span class="p">,</span> <span class="s">&#39;UZ_o&#39;</span><span class="p">:</span> <span class="s">&#39;length&#39;</span><span class="p">,</span><span class="s">&#39;UR_o&#39;</span><span class="p">:</span> <span class="s">&#39;length&#39;</span><span class="p">,</span>
+               <span class="s">&#39;TEMP_o&#39;</span><span class="p">:</span> <span class="s">&#39;temperature&#39;</span><span class="p">,</span>
+               <span class="s">&#39;FX_o&#39;</span><span class="p">:</span> <span class="s">&#39;force&#39;</span><span class="p">,</span> <span class="s">&#39;FY_o&#39;</span><span class="p">:</span> <span class="s">&#39;force&#39;</span><span class="p">,</span> <span class="s">&#39;FZ_o&#39;</span><span class="p">:</span> <span class="s">&#39;force&#39;</span><span class="p">}</span>
+<span class="n">calctypes</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;max&#39;</span><span class="p">,</span> <span class="s">&#39;min&#39;</span><span class="p">,</span> <span class="s">&#39;avg&#39;</span><span class="p">]</span>
+
+<span class="c">#Information about unit strings</span>
+<div class="viewcode-block" id="AnsysUnitsInfo"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysinfo.AnsysUnitsInfo">[docs]</a><span class="k">class</span> <span class="nc">AnsysUnitsInfo</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Information about units used in ANSYS.&quot;&quot;&quot;</span>
+    <span class="n">info</span> <span class="o">=</span> <span class="p">{}</span> <span class="c"># empty dictionary</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="n">mass</span> <span class="o">=</span> <span class="s">&#39;kg&#39;</span><span class="p">,</span> <span class="n">time</span> <span class="o">=</span> <span class="s">&#39;s&#39;</span><span class="p">,</span>
+                 <span class="n">temperature</span> <span class="o">=</span> <span class="s">&#39;degK&#39;</span><span class="p">,</span> <span class="n">speed</span> <span class="o">=</span> <span class="s">&#39;rad/s&#39;</span><span class="p">,</span> <span class="n">ok</span> <span class="o">=</span> <span class="bp">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ok</span> <span class="o">=</span> <span class="n">ok</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;length&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">length</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;mass&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mass</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;temperature&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">temperature</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">speed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;force&#39;</span><span class="p">]</span> <span class="o">=</span> \
+                <span class="s">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;length&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;*&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;mass&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;)/(&#39;</span> <span class="o">+</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;**2)&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;pressure&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;mass&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;)/(&#39;</span> <span class="o">+</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;length&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;**2)&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;heat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#39;(&#39;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;force&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;)*(&#39;</span> <span class="o">+</span> \
+                <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="p">[</span><span class="s">&#39;length&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="s">&#39;)&#39;</span>
+<div class="viewcode-block" id="AnsysUnitsInfo.dump"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysinfo.AnsysUnitsInfo.dump">[docs]</a>    <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">):</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s">&#39;AnsysUnitsInfo&#39;</span>
+        <span class="n">p2</span> <span class="o">=</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s">&#39;   &#39;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ok</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&#39; ok</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&#39; NOT ok</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">p2</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="n">p2</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39;: &#39;</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+</div></div>
+<span class="n">unitsindices</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;default&#39;</span> <span class="p">:</span> <span class="s">&#39;-1&#39;</span><span class="p">,</span>
+    <span class="s">&#39;USER&#39;</span> <span class="p">:</span> <span class="s">&#39;0&#39;</span><span class="p">,</span>
+    <span class="s">&#39;SI&#39;</span> <span class="p">:</span> <span class="s">&#39;1&#39;</span><span class="p">,</span>
+    <span class="s">&#39;MKS&#39;</span> <span class="p">:</span> <span class="s">&#39;5&#39;</span><span class="p">,</span>
+    <span class="s">&#39;uMKS&#39;</span> <span class="p">:</span> <span class="s">&#39;7&#39;</span><span class="p">,</span>
+    <span class="s">&#39;CGS&#39;</span> <span class="p">:</span> <span class="s">&#39;2&#39;</span><span class="p">,</span>
+    <span class="s">&#39;MPA&#39;</span> <span class="p">:</span> <span class="s">&#39;6&#39;</span><span class="p">,</span>
+    <span class="s">&#39;BFT&#39;</span> <span class="p">:</span> <span class="s">&#39;3&#39;</span><span class="p">,</span>
+    <span class="s">&#39;BIN&#39;</span> <span class="p">:</span> <span class="s">&#39;4&#39;</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="n">unitsinfodict</span> <span class="o">=</span> <span class="p">{}</span> <span class="c">#empty dictionary</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;default&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">()</span> <span class="c"># default</span>
+<span class="c"># user, which we can&#39;t handle</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;USER&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">(</span><span class="n">ok</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;SI&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">()</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;MKS&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">(</span><span class="n">temperature</span> <span class="o">=</span> <span class="s">&#39;degC&#39;</span><span class="p">)</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;uMKS&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">(</span><span class="n">length</span> <span class="o">=</span> <span class="s">&#39;um&#39;</span><span class="p">,</span>
+    <span class="n">temperature</span> <span class="o">=</span> <span class="s">&#39;degC&#39;</span><span class="p">)</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;CGS&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">(</span><span class="n">length</span> <span class="o">=</span> <span class="s">&#39;cm&#39;</span><span class="p">,</span> <span class="n">mass</span> <span class="o">=</span> <span class="s">&#39;g&#39;</span><span class="p">,</span>
+    <span class="n">temperature</span> <span class="o">=</span> <span class="s">&#39;degC&#39;</span><span class="p">)</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;MPA&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">(</span><span class="n">length</span> <span class="o">=</span> <span class="s">&#39;mm&#39;</span><span class="p">,</span> <span class="n">mass</span> <span class="o">=</span> <span class="s">&#39;Mg&#39;</span><span class="p">,</span>
+    <span class="n">temperature</span> <span class="o">=</span> <span class="s">&#39;degC&#39;</span><span class="p">)</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;BFT&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">(</span><span class="n">length</span> <span class="o">=</span> <span class="s">&#39;ft&#39;</span><span class="p">,</span>
+    <span class="n">mass</span> <span class="o">=</span> <span class="s">&#39;slug&#39;</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="s">&#39;degF&#39;</span><span class="p">)</span>
+<span class="n">unitsinfodict</span><span class="p">[</span><span class="n">unitsindices</span><span class="p">[</span><span class="s">&#39;BIN&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">AnsysUnitsInfo</span><span class="p">(</span><span class="n">length</span> <span class="o">=</span> <span class="s">&#39;inch&#39;</span><span class="p">,</span>
+    <span class="n">mass</span> <span class="o">=</span> <span class="s">&#39;lbm&#39;</span><span class="p">,</span> <span class="n">temperature</span> <span class="o">=</span> <span class="s">&#39;degF&#39;</span><span class="p">)</span> <span class="c">#TO_CHECK:  check if mass is correct</span>
+
+<div class="viewcode-block" id="dump_unitsinfodict"><a class="viewcode-back" href="../../srcdocs.html#ansyswrapper.ansysinfo.dump_unitsinfodict">[docs]</a><span class="k">def</span> <span class="nf">dump_unitsinfodict</span><span class="p">():</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="s">&#39;unitsinfodict:</span><span class="se">\n</span><span class="s">&#39;</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">unitsinfodict</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">s</span> <span class="o">+</span> <span class="s">&#39;   &#39;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s">&#39;:</span><span class="se">\n</span><span class="s">&#39;</span> <span class="o">+</span> <span class="n">v</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="s">&#39;      &#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+    <span class="k">return</span> <span class="n">s</span>
+
+<span class="c">#Utility functions</span></div>
+<span class="k">def</span> <span class="nf">_make_name</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">extension</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">name</span> <span class="o">+</span> <span class="s">&#39;_&#39;</span> <span class="o">+</span> <span class="n">extension</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">ansyswrapper 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013 Mechanical Solutions Inc..
+      Last updated on Oct 30, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

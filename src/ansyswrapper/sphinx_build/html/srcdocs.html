@@ -1,0 +1,481 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Source Documentation &mdash; ansyswrapper 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ansyswrapper 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Package Metadata" href="pkgdocs.html" />
+    <link rel="prev" title="Usage Guide" href="usage.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pkgdocs.html" title="Package Metadata"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage Guide"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ansyswrapper 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="source-documentation">
+<span id="ansyswrapper-src-label"></span><h1>Source Documentation<a class="headerlink" href="#source-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-ansyswrapper.ansysWrapperGenerator">
+<span id="ansyswrappergenerator-py"></span><span id="ansyswrapper-ansyswrappergenerator-py"></span><span id="index-0"></span><h2>ansysWrapperGenerator.py<a class="headerlink" href="#module-ansyswrapper.ansysWrapperGenerator" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ansyswrapper.ansysWrapperGenerator.MainDlg">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.ansysWrapperGenerator.</tt><tt class="descname">MainDlg</tt><big>(</big><em>parent=None</em>, <em>logger_name=None</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGenerator.html#MainDlg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.MainDlg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt>, <a class="reference internal" href="#ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog" title="ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog"><tt class="xref py py-class docutils literal"><span class="pre">ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog</span></tt></a></p>
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGenerator.MainDlg.on_dirBrowse_clicked">
+<tt class="descname">on_dirBrowse_clicked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGenerator.html#MainDlg.on_dirBrowse_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.MainDlg.on_dirBrowse_clicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGenerator.MainDlg.on_generateWrap_clicked">
+<tt class="descname">on_generateWrap_clicked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGenerator.html#MainDlg.on_generateWrap_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.MainDlg.on_generateWrap_clicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGenerator.MainDlg.on_nameBrowse_clicked">
+<tt class="descname">on_nameBrowse_clicked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGenerator.html#MainDlg.on_nameBrowse_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.MainDlg.on_nameBrowse_clicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.ansysWrapperGenerator.</tt><tt class="descname">WrapperGenerator</tt><big>(</big><em>name</em>, <em>genfilename</em>, <em>dbfile=''</em>, <em>componentsfile=''</em>, <em>ANSYS_VER='ANSYS145'</em>, <em>model_file_ext='py'</em>, <em>logger_name=None</em>, <em>initial_values_dictionary={'temp_unif': 0.0</em>, <em>'omega_Z': 0.0</em>, <em>'temp_ref': 0.0}</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGenerator.html#WrapperGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates an OpenMDAO Wrapper for ANSYS Structural, based on info either
+in a generated component information file, or in the ANSYS db.</p>
+<p>To use: initialize, then call generate().</p>
+<p><em>Parameters</em></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>name: string</dt>
+<dd><blockquote class="first">
+<div>Name used to identify the Wrapped Component.</div></blockquote>
+<dl class="last docutils">
+<dt>genfilename: string</dt>
+<dd>Full path to filename of the generate Wrapped Component.</dd>
+<dt>dbfile: string (optional)</dt>
+<dd>Full path to name of ANSYS Structural .db file.  Default &#8216;&#8217;.  One of dbfile and componentsfile MUST be set.</dd>
+<dt>componentsfile: string (optional)</dt>
+<dd>Full path to name of previously created components file for the ANSYS Structural Model.  Default &#8216;&#8217;.  
+One of dbfile and componentsfile MUST be set.</dd>
+<dt>ANSYS_VER: string (optional)</dt>
+<dd>ANSYS Version String. Default ANSYS145.</dd>
+<dt>model_file_ext: string (optional)</dt>
+<dd>File extension for the model file.  Default py.</dd>
+<dt>logger_name: string(optional)</dt>
+<dd>Name of an existing logging::logger to use, if any.  Default None.  If None, a logger will be created with an internal name.</dd>
+<dt>initial_values_dictionary: dictionary of string to float (optional)</dt>
+<dd>Values in the original Structural model of the items in ansysinfo globalinputtypes</dd>
+</dl>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator.generate">
+<tt class="descname">generate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGenerator.html#WrapperGenerator.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the wrapper.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator.get_model_file_name">
+<tt class="descname">get_model_file_name</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGenerator.html#WrapperGenerator.get_model_file_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.get_model_file_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator.components">
+<tt class="descname">components</tt><em class="property"> = {}</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator.ok">
+<tt class="descname">ok</tt><em class="property"> = True</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.ok" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator.post">
+<tt class="descname">post</tt><em class="property"> = []</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator.prep7">
+<tt class="descname">prep7</tt><em class="property"> = []</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.prep7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGenerator.WrapperGenerator.solution">
+<tt class="descname">solution</tt><em class="property"> = []</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.WrapperGenerator.solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ansyswrapper.ansysWrapperGenerator.bin">
+<tt class="descclassname">ansyswrapper.ansysWrapperGenerator.</tt><tt class="descname">bin</tt><big>(</big><em>QTextStream</em><big>)</big> &rarr; QTextStream<a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.bin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ansyswrapper.ansysWrapperGenerator.hex">
+<tt class="descclassname">ansyswrapper.ansysWrapperGenerator.</tt><tt class="descname">hex</tt><big>(</big><em>QTextStream</em><big>)</big> &rarr; QTextStream<a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.hex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ansyswrapper.ansysWrapperGenerator.oct">
+<tt class="descclassname">ansyswrapper.ansysWrapperGenerator.</tt><tt class="descname">oct</tt><big>(</big><em>QTextStream</em><big>)</big> &rarr; QTextStream<a class="headerlink" href="#ansyswrapper.ansysWrapperGenerator.oct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-ansyswrapper.ansysWrapperGeneratorGUI">
+<span id="ansyswrappergeneratorgui-py"></span><span id="ansyswrapper-ansyswrappergeneratorgui-py"></span><span id="index-1"></span><h2>ansysWrapperGeneratorGUI.py<a class="headerlink" href="#module-ansyswrapper.ansysWrapperGeneratorGUI" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.MainDlg">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.ansysWrapperGeneratorGUI.</tt><tt class="descname">MainDlg</tt><big>(</big><em>parent=None</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGeneratorGUI.html#MainDlg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.MainDlg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">PyQt4.QtGui.QDialog</span></tt>, <a class="reference internal" href="#ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog" title="ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog"><tt class="xref py py-class docutils literal"><span class="pre">ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog</span></tt></a></p>
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.MainDlg.on_dirBrowse_clicked">
+<tt class="descname">on_dirBrowse_clicked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGeneratorGUI.html#MainDlg.on_dirBrowse_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.MainDlg.on_dirBrowse_clicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.MainDlg.on_generateWrap_clicked">
+<tt class="descname">on_generateWrap_clicked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGeneratorGUI.html#MainDlg.on_generateWrap_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.MainDlg.on_generateWrap_clicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.MainDlg.on_nameBrowse_clicked">
+<tt class="descname">on_nameBrowse_clicked</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGeneratorGUI.html#MainDlg.on_nameBrowse_clicked"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.MainDlg.on_nameBrowse_clicked" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.ansysWrapperGeneratorGUI.</tt><tt class="descname">WrapperGenerator</tt><big>(</big><em>name</em>, <em>genfilename</em>, <em>dbfile=''</em>, <em>componentsfile=''</em>, <em>ver='ANSYS145'</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGeneratorGUI.html#WrapperGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an OpenMDAO Wrapper for ANSYS Structural, based on info either
+in a generated component information file, or on the ANSYS db.</p>
+<dl class="method">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.generate">
+<tt class="descname">generate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysWrapperGeneratorGUI.html#WrapperGenerator.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.generate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the wrapper.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.components">
+<tt class="descname">components</tt><em class="property"> = {}</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.ok">
+<tt class="descname">ok</tt><em class="property"> = True</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.ok" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.post">
+<tt class="descname">post</tt><em class="property"> = []</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.post" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.prep7">
+<tt class="descname">prep7</tt><em class="property"> = []</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.prep7" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.solution">
+<tt class="descname">solution</tt><em class="property"> = []</em><a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.WrapperGenerator.solution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.bin">
+<tt class="descclassname">ansyswrapper.ansysWrapperGeneratorGUI.</tt><tt class="descname">bin</tt><big>(</big><em>QTextStream</em><big>)</big> &rarr; QTextStream<a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.bin" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.hex">
+<tt class="descclassname">ansyswrapper.ansysWrapperGeneratorGUI.</tt><tt class="descname">hex</tt><big>(</big><em>QTextStream</em><big>)</big> &rarr; QTextStream<a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.hex" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="ansyswrapper.ansysWrapperGeneratorGUI.oct">
+<tt class="descclassname">ansyswrapper.ansysWrapperGeneratorGUI.</tt><tt class="descname">oct</tt><big>(</big><em>QTextStream</em><big>)</big> &rarr; QTextStream<a class="headerlink" href="#ansyswrapper.ansysWrapperGeneratorGUI.oct" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-ansyswrapper.ansysinfo">
+<span id="ansysinfo-py"></span><span id="ansyswrapper-ansysinfo-py"></span><span id="index-2"></span><h2>ansysinfo.py<a class="headerlink" href="#module-ansyswrapper.ansysinfo" title="Permalink to this headline">¶</a></h2>
+<p>Holds info about how to use ANSYS Classic Structural.</p>
+<dl class="class">
+<dt id="ansyswrapper.ansysinfo.AnsysUnitsInfo">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.ansysinfo.</tt><tt class="descname">AnsysUnitsInfo</tt><big>(</big><em>length='m'</em>, <em>mass='kg'</em>, <em>time='s'</em>, <em>temperature='degK'</em>, <em>speed='rad/s'</em>, <em>ok=True</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysinfo.html#AnsysUnitsInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysinfo.AnsysUnitsInfo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Information about units used in ANSYS.</p>
+<dl class="method">
+<dt id="ansyswrapper.ansysinfo.AnsysUnitsInfo.dump">
+<tt class="descname">dump</tt><big>(</big><em>prefix=''</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysinfo.html#AnsysUnitsInfo.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysinfo.AnsysUnitsInfo.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansysinfo.AnsysUnitsInfo.info">
+<tt class="descname">info</tt><em class="property"> = {'force': '(inch*lbm)/(s**2)', 'temperature': 'degF', 'heat': '((inch*lbm)/(s**2))*(inch)', 'pressure': '(lbm)/(inch**2)', 'length': 'inch', 'mass': 'lbm', 'time': 's', 'speed': 'rad/s'}</em><a class="headerlink" href="#ansyswrapper.ansysinfo.AnsysUnitsInfo.info" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ansyswrapper.ansysinfo.dump_unitsinfodict">
+<tt class="descclassname">ansyswrapper.ansysinfo.</tt><tt class="descname">dump_unitsinfodict</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansysinfo.html#dump_unitsinfodict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansysinfo.dump_unitsinfodict" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-ansyswrapper.ansyswrapper">
+<span id="ansyswrapper-py"></span><span id="ansyswrapper-ansyswrapper-py"></span><span id="index-3"></span><h2>ansyswrapper.py<a class="headerlink" href="#module-ansyswrapper.ansyswrapper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.ansyswrapper.</tt><tt class="descname">ANSYSWrapperBase</tt><big>(</big><em>name, runner, dbfile, cdbfile=None, elasticity=[100, 100, 100], poisson=[0.33, 0.33, 0.33], logger_name=None</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">openmdao.lib.components.external_code.ExternalCode</span></tt></p>
+<p>Base class for wrappers for ANSYS Classical Structural. Used internally by ANSYSWrapperGenerator.</p>
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.convert_units">
+<tt class="descname">convert_units</tt><big>(</big><em>n</em>, <em>v</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.convert_units"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.convert_units" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.dump">
+<tt class="descname">dump</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.dump"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.dump" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.dump_cache">
+<tt class="descname">dump_cache</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.dump_cache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.dump_cache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.execute">
+<tt class="descname">execute</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write input, signal ansys to run, read output</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.extra_inputs">
+<tt class="descname">extra_inputs</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.extra_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.extra_inputs" title="Permalink to this definition">¶</a></dt>
+<dd><p>entry point so the child class can add extra input to the *.inp file for Ansys</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.get_attr_value">
+<tt class="descname">get_attr_value</tt><big>(</big><em>name</em>, <em>default=0.0</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.get_attr_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.get_attr_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.picklecache">
+<tt class="descname">picklecache</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.picklecache"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.picklecache" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.post">
+<tt class="descname">post</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.post"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.post" title="Permalink to this definition">¶</a></dt>
+<dd><p>entry point for derived wrappers to add customization to the /POST section</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.prep7">
+<tt class="descname">prep7</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.prep7"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.prep7" title="Permalink to this definition">¶</a></dt>
+<dd><p>entry point for derived wrappers to add customization to the /PREP7 section</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.process_output_from_fea_model">
+<tt class="descname">process_output_from_fea_model</tt><big>(</big><em>feaModel</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.process_output_from_fea_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.process_output_from_fea_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override if necessary in subclass.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.read_output">
+<tt class="descname">read_output</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.read_output"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.read_output" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read output file.
+Uses self.components.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.solution">
+<tt class="descname">solution</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>entry point for derived wrappers to add customization to the /SOL section</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.write_input">
+<tt class="descname">write_input</tt><big>(</big><em>inputs=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.write_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.write_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write input file self.loadsfile.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.write_solution">
+<tt class="descname">write_solution</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ansyswrapper.html#ANSYSWrapperBase.write_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.write_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write solution commands file self.solutionfile.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.components">
+<tt class="descname">components</tt><em class="property"> = {}</em><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.components" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="ansyswrapper.ansyswrapper.ANSYSWrapperBase.values">
+<tt class="descname">values</tt><em class="property"> = {}</em><a class="headerlink" href="#ansyswrapper.ansyswrapper.ANSYSWrapperBase.values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ansyswrapper.test.test_ansyswrapper">
+<span id="test-ansyswrapper-py"></span><span id="ansyswrapper-test-test-ansyswrapper-py"></span><span id="index-4"></span><h2>test_ansyswrapper.py<a class="headerlink" href="#module-ansyswrapper.test.test_ansyswrapper" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ansyswrapper.test.test_ansyswrapper.ANSYSWrapperBaseTestCase">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.test.test_ansyswrapper.</tt><tt class="descname">ANSYSWrapperBaseTestCase</tt><big>(</big><em>methodName='runTest'</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/test/test_ansyswrapper.html#ANSYSWrapperBaseTestCase"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.test.test_ansyswrapper.ANSYSWrapperBaseTestCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">unittest.case.TestCase</span></tt></p>
+<dl class="method">
+<dt id="ansyswrapper.test.test_ansyswrapper.ANSYSWrapperBaseTestCase.setUp">
+<tt class="descname">setUp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/test/test_ansyswrapper.html#ANSYSWrapperBaseTestCase.setUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.test.test_ansyswrapper.ANSYSWrapperBaseTestCase.setUp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.test.test_ansyswrapper.ANSYSWrapperBaseTestCase.tearDown">
+<tt class="descname">tearDown</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/ansyswrapper/test/test_ansyswrapper.html#ANSYSWrapperBaseTestCase.tearDown"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.test.test_ansyswrapper.ANSYSWrapperBaseTestCase.tearDown" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-ansyswrapper.ui_ANSYS_Wrapper_Generator_3">
+<span id="ui-ansys-wrapper-generator-3-py"></span><span id="ansyswrapper-ui-ansys-wrapper-generator-3-py"></span><span id="index-5"></span><h2>ui_ANSYS_Wrapper_Generator_3.py<a class="headerlink" href="#module-ansyswrapper.ui_ANSYS_Wrapper_Generator_3" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog">
+<em class="property">class </em><tt class="descclassname">ansyswrapper.ui_ANSYS_Wrapper_Generator_3.</tt><tt class="descname">Ui_Dialog</tt><a class="reference internal" href="_modules/ansyswrapper/ui_ANSYS_Wrapper_Generator_3.html#Ui_Dialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <tt class="xref py py-class docutils literal"><span class="pre">object</span></tt></p>
+<dl class="method">
+<dt id="ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog.retranslateUi">
+<tt class="descname">retranslateUi</tt><big>(</big><em>Dialog</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ui_ANSYS_Wrapper_Generator_3.html#Ui_Dialog.retranslateUi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog.retranslateUi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog.setupUi">
+<tt class="descname">setupUi</tt><big>(</big><em>Dialog</em><big>)</big><a class="reference internal" href="_modules/ansyswrapper/ui_ANSYS_Wrapper_Generator_3.html#Ui_Dialog.setupUi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#ansyswrapper.ui_ANSYS_Wrapper_Generator_3.Ui_Dialog.setupUi" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Source Documentation</a><ul>
+<li><a class="reference internal" href="#module-ansyswrapper.ansysWrapperGenerator">ansysWrapperGenerator.py</a></li>
+<li><a class="reference internal" href="#module-ansyswrapper.ansysWrapperGeneratorGUI">ansysWrapperGeneratorGUI.py</a></li>
+<li><a class="reference internal" href="#module-ansyswrapper.ansysinfo">ansysinfo.py</a></li>
+<li><a class="reference internal" href="#module-ansyswrapper.ansyswrapper">ansyswrapper.py</a></li>
+<li><a class="reference internal" href="#module-ansyswrapper.test.test_ansyswrapper">test_ansyswrapper.py</a></li>
+<li><a class="reference internal" href="#module-ansyswrapper.ui_ANSYS_Wrapper_Generator_3">ui_ANSYS_Wrapper_Generator_3.py</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="usage.html"
+                        title="previous chapter">Usage Guide</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pkgdocs.html"
+                        title="next chapter">Package Metadata</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/srcdocs.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pkgdocs.html" title="Package Metadata"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="usage.html" title="Usage Guide"
+             >previous</a> |</li>
+        <li><a href="index.html">ansyswrapper 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013 Mechanical Solutions Inc..
+      Last updated on Oct 30, 2013.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
